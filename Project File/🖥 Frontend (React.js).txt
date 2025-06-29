@@ -1,0 +1,90 @@
+🖥 Frontend (React.js)
+/frontend/src/App.js
+jsx
+Copy
+Edit
+import React from 'react';
+import RequirementAnalyzer from './components/RequirementAnalyzer';
+
+function App() {
+  return (
+    <div className="App">
+      <h1>SmartSDLC – Requirement Analyzer</h1>
+      <RequirementAnalyzer />
+    </div>
+  );
+}
+
+export default App;
+/frontend/src/components/RequirementAnalyzer.js
+jsx
+Copy
+Edit
+import React, { useState } from 'react';
+import { analyzeRequirements } from '../api';
+
+function RequirementAnalyzer() {
+  const [text, setText] = useState('');
+  const [result, setResult] = useState('');
+
+  const handleSubmit = async () => {
+    const res = await analyzeRequirements(text);
+    setResult(res);
+  };
+
+  return (
+    <div>
+      <textarea rows="10" cols="80" value={text} onChange={(e) => setText(e.target.value)} placeholder="Enter requirements..." />
+      <br />
+      <button onClick={handleSubmit}>Analyze</button>
+      <pre>{result}</pre>
+    </div>
+  );
+}
+
+export default RequirementAnalyzer;
+/frontend/src/api.js
+js
+Copy
+Edit
+export async function analyzeRequirements(text) {
+  const response = await fetch('http://localhost:5000/api/ai/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+
+  const data = await response.json();
+  return data.result;
+}
+🧪 Run the App
+Set environment in .env (in backend):
+
+ini
+Copy
+Edit
+OPENAI_API_KEY=your_openai_key_here
+Install & run backend:
+
+bash
+Copy
+Edit
+cd backend
+npm install
+node server.js
+Install & run frontend:
+
+bash
+Copy
+Edit
+cd frontend
+npm install
+npm start
+✅ Next Steps
+Would you like me to:
+
+Add test case generation?
+
+Integrate CI/CD (e.g., GitHub Actions)?
+
+Expand modules for Design, Development, Testing, or Deployment?

@@ -1,0 +1,62 @@
+🧠 Backend (Node.js + Express)
+/backend/server.js
+js
+Copy
+Edit
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+const aiRoutes = require('./routes/ai');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.use('/api/ai', aiRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(Server running on port ${PORT}));
+/backend/routes/ai.js
+js
+Copy
+Edit
+const express = require('express');
+const router = express.Router();
+const { analyzeRequirements } = require('../services/openaiService');
+
+router.post('/analyze', async (req, res) => {
+    try {
+        const { text } = req.body;
+        const result = await analyzeRequirements(text);
+        res.json({ result });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+module.exports = router;
+/backend/services/openaiService.js
+js
+Copy
+Edit
+const { Configuration, OpenAIApi } = require('openai');
+
+const config = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(config);
+
+async function analyzeRequirements(text) {
+    const response = await openai.createChatCompletion({
+        model: "gpt-4",
+        messages: [
+            { role: "system", content: "You are a software analyst." },
+            { role: "user", content: Analyze the following requirements:\n${text} },
+        ],
+    });
+
+    return response.data.choices[0].message.content;
+}
+
+module.exports = { analyzeRequirements };
